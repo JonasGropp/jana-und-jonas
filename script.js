@@ -2,18 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const video = document.getElementById('weddingVideo');
     const videoWrapper = document.getElementById('videoWrapper');
-    const soundButton = document.getElementById('soundButton');
-
-    // Sicherheit prüfen
-    if (!video) {
-        console.error('Video nicht gefunden');
-        return;
-    }
-
-    if (!soundButton) {
-        console.error('Sound Button nicht gefunden');
-        return;
-    }
+    const soundButton = document.getElementById('sound-Button');
 
     // Video neu starten bei Klick auf das Video
     videoWrapper.addEventListener('click', (event) => {

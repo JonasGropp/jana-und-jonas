@@ -1,47 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('weddingVideo');
+  const videoWrapper = document.getElementById('videoWrapper');
+  const soundButton = document.getElementById('soundButton');
 
-    const video = document.getElementById('weddingVideo');
-    const videoWrapper = document.getElementById('videoWrapper');
-    const soundButton = document.getElementById('sound-Button');
-
-    // Video neu starten bei Klick auf das Video
-    videoWrapper.addEventListener('click', (event) => {
-
-        // Nicht neu starten wenn auf den Sound Button geklickt wurde
-        if (event.target === soundButton) {
-            return;
-        }
-
-        video.currentTime = 0;
-        video.play().catch(err => console.log(err));
-
+  if (!video || !videoWrapper || !soundButton) {
+    console.error('Ein Element wurde nicht gefunden:', {
+      video,
+      videoWrapper,
+      soundButton
     });
+    return;
+  }
 
-    // Ton ein/aus
-    soundButton.addEventListener('click', (event) => {
+  soundButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
 
-        event.stopPropagation();
+    video.muted = !video.muted;
+    video.volume = 1;
 
-        if (video.muted) {
+    if (video.muted) {
+      soundButton.textContent = '🔇 Ton einschalten';
+    } else {
+      soundButton.textContent = '🔊 Ton an';
+      video.play().catch(error => console.log('Video konnte nicht gestartet werden:', error));
+    }
+  });
 
-            video.muted = false;
-            video.volume = 1;
+  videoWrapper.addEventListener('click', (event) => {
+    if (event.target.closest('#soundButton')) {
+      return;
+    }
 
-            soundButton.innerHTML = '🔊 Ton an';
-
-            // Bei pausiertem Video erneut starten
-            if (video.paused) {
-                video.play().catch(err => console.log(err));
-            }
-
-        } else {
-
-            video.muted = true;
-
-            soundButton.innerHTML = '🔇 Ton einschalten';
-
-        }
-
-    });
-
+    video.currentTime = 0;
+    video.play().catch(error => console.log('Video konnte nicht gestartet werden:', error));
+  });
 });

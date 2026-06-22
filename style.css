@@ -437,6 +437,43 @@ body {
   font-size: clamp(1.1rem, 4vw, 1.5rem);
 }
 
+.sound-button {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px);
+
+  color: #F7F1E8;
+  border: 1px solid rgba(247,241,232,0.3);
+
+  padding: 12px 18px;
+  border-radius: 999px;
+
+  font-family: "Cormorant Garamond", serif;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  z-index: 999;
+}
+
+.sound-button:hover {
+  background: rgba(233,106,36,0.8);
+}
+
+@media (max-width: 768px) {
+  .sound-button {
+    bottom: 20px;
+    right: 20px;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
 .final-frame-info {
   margin-top: 1.8rem;
   font-family: "Times New Roman", serif;

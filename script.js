@@ -3,22 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('weddingVideo');
     const playOverlay = document.getElementById('playOverlay');
 
-    playOverlay.addEventListener('click', async () => {
+    playOverlay.addEventListener('click', () => {
 
-        try {
+        video.muted = false;
+        video.volume = 1;
 
-            video.muted = false;
-            video.volume = 1;
+        video.play();
 
-            await video.play();
-
-            playOverlay.style.display = 'none';
-
-        } catch (error) {
-
-            console.error(error);
-
-        }
+        playOverlay.style.display = 'none';
 
     });
 
@@ -33,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (video.ended) {
 
             video.currentTime = 0;
-
             video.play();
 
         }

@@ -3,25 +3,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('weddingVideo');
     const playOverlay = document.getElementById('playOverlay');
 
-    playOverlay.addEventListener('click', () => {
+    playOverlay.addEventListener('click', async () => {
 
-        video.muted = false;
-        video.volume = 1;
+        try {
 
-        video.play();
+            video.muted = false;
+            video.volume = 1;
 
-        playOverlay.style.display = 'none';
+            await video.play();
+
+            playOverlay.style.display = 'none';
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
     });
 
     video.addEventListener('ended', () => {
+
         video.pause();
+
     });
 
     video.addEventListener('click', () => {
 
         if (video.ended) {
+
             video.currentTime = 0;
+
             video.play();
+
         }
 
     });

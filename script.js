@@ -1,30 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const video = document.getElementById('weddingVideo');
-  const soundButton = document.getElementById('soundButton');
 
-  soundButton.addEventListener('click', () => {
+    const video = document.getElementById('weddingVideo');
+    const videoWrapper = document.getElementById('videoWrapper');
+    const soundButton = document.getElementById('soundButton');
 
-  if (video.muted) {
+    // Sicherheit prüfen
+    if (!video) {
+        console.error('Video nicht gefunden');
+        return;
+    }
 
-    video.muted = false;
-    video.volume = 1;
+    if (!soundButton) {
+        console.error('Sound Button nicht gefunden');
+        return;
+    }
 
-    soundButton.innerHTML = '🔊 Ton an';
+    // Video neu starten bei Klick auf das Video
+    videoWrapper.addEventListener('click', (event) => {
 
-  } else {
+        // Nicht neu starten wenn auf den Sound Button geklickt wurde
+        if (event.target === soundButton) {
+            return;
+        }
 
-    video.muted = true;
+        video.currentTime = 0;
+        video.play().catch(err => console.log(err));
 
-    soundButton.innerHTML = '🔇 Ton einschalten';
+    });
 
-  }
+    // Ton ein/aus
+    soundButton.addEventListener('click', (event) => {
 
-});
-  
-  const videoWrapper = document.getElementById('videoWrapper');
+        event.stopPropagation();
 
-  videoWrapper.addEventListener('click', () => {
-    video.currentTime = 0;
-    video.play().catch(() => {});
-  });
+        if (video.muted) {
+
+            video.muted = false;
+            video.volume = 1;
+
+            soundButton.innerHTML = '🔊 Ton an';
+
+            // Bei pausiertem Video erneut starten
+            if (video.paused) {
+                video.play().catch(err => console.log(err));
+            }
+
+        } else {
+
+            video.muted = true;
+
+            soundButton.innerHTML = '🔇 Ton einschalten';
+
+        }
+
+    });
+
 });

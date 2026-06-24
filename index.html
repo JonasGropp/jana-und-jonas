@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jana & Jonas – Save the Date</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jana & Jonas – Save the Date</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<section class="video-section">
+<section class="hero-section">
+  <div class="video-wrapper">
+    <video
+      id="weddingVideo"
+      playsinline
+      preload="metadata"
+      poster="video/poster.jpeg"
+    >
+      <source src="video/wedding.mp4" type="video/mp4">
+    </video>
 
-    <div class="video-wrapper">
-
-        <video
-            id="weddingVideo"
-            playsinline
-            preload="metadata"
-            poster="video/poster.jpeg"
-        >
-            <source src="video/wedding.mp4" type="video/mp4">
-        </video>
-
-        <div id="playOverlay" class="play-overlay">
-
-            <div class="play-button">
-                <div class="play-triangle"></div>
-            </div>
-
-        </div>
-
+    <div id="playOverlay" class="play-overlay">
+      <div class="play-button">
+        <div class="play-triangle"></div>
+      </div>
     </div>
+  </div>
+</section>
 
+<section class="polaroid-scroll">
+  <div class="polaroid-stage">
+
+    <figure class="polaroid polaroid-1">
+      <img src="video/photo-1.jpeg" alt="Jana und Jonas 1">
+      <figcaption>♡ Save the Date</figcaption>
+    </figure>
+
+    <figure class="polaroid polaroid-2">
+      <img src="video/photo-2.jpeg" alt="Jana und Jonas 2">
+      <figcaption>♡ 11. September 2027</figcaption>
+    </figure>
+
+    <figure class="polaroid polaroid-3">
+      <img src="video/photo-3.jpeg" alt="Jana und Jonas 3">
+      <figcaption>♡ More Info's coming soon</figcaption>
+    </figure>
+
+  </div>
 </section>
 
 <script src="script.js"></script>

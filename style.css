@@ -136,18 +136,12 @@ body {
 
 .polaroid-1 {
   transform: translate(-50%, 82svh) rotate(-10deg);
-  animation: photo1 linear both;
-  animation-timeline: scroll();
-  animation-range: 0% 42%;
 }
 
 /* BILD 2 */
 
 .polaroid-2 {
   transform: translate(-50%, 120svh) rotate(10deg);
-  animation: photo2 linear both;
-  animation-timeline: scroll();
-  animation-range: 28% 66%;
 }
 
 /* BILD 3 */
@@ -159,9 +153,6 @@ body {
   background: transparent;
   box-shadow: none;
   transform: translate(-50%, 120svh) rotate(0deg);
-  animation: photo3 linear both;
-  animation-timeline: scroll();
-  animation-range: 58% 100%;
 }
 
 .polaroid-3 img {

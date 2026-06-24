@@ -1,34 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById('weddingVideo');
+  const playOverlay = document.getElementById('playOverlay');
 
-    const video = document.getElementById('weddingVideo');
-    const playOverlay = document.getElementById('playOverlay');
+  playOverlay.addEventListener('click', () => {
+    video.muted = false;
+    video.volume = 1;
+    video.currentTime = 0;
 
-    playOverlay.addEventListener('click', () => {
-
-        video.muted = false;
-        video.volume = 1;
-
-        video.play();
-
-        playOverlay.style.display = 'none';
-
+    video.play().then(() => {
+      playOverlay.style.display = 'none';
+    }).catch(error => {
+      console.log('Video konnte nicht gestartet werden:', error);
     });
+  });
 
-    video.addEventListener('ended', () => {
+  video.addEventListener('click', () => {
+    video.currentTime = 0;
+    video.muted = false;
+    video.volume = 1;
 
-        video.pause();
-
+    video.play().catch(error => {
+      console.log('Video konnte nicht neu gestartet werden:', error);
     });
+  });
 
-    video.addEventListener('click', () => {
-
-        if (video.ended) {
-
-            video.currentTime = 0;
-            video.play();
-
-        }
-
-    });
-
+  video.addEventListener('ended', () => {
+    video.pause();
+  });
 });

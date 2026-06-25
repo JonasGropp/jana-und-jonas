@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { time: 13.48, progress: 0.3958 },
   
     { time: 15.06, progress: 0.58 },
-    { time: 15.41, progress: 1.00 },
+    { time: 15.41, progress: 0.7228 },
+    { time: 17.00, progress: 1.00 }
   ];
 
   function clamp(value, min, max) {

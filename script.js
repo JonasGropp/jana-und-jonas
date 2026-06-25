@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { time: 11.82, progress: 0.00 },
     { time: 12.17, progress: 0.1292 },
   
-    { time: 13.50, progress: 0.27 },
-    { time: 13.85, progress: 0.3958 },
+    { time: 13.49, progress: 0.27 },
+    { time: 13.84, progress: 0.3958 },
   
     { time: 15.06, progress: 0.58 },
     { time: 15.41, progress: 0.7228 },

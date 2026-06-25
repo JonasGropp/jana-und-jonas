@@ -23,14 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
   ]);
 
   const videoScrollTimeline = [
-    { time: 11.0, progress: 0.00 },
-    { time: 11.5, progress: 0.1292 },
+    { time: 11.82, progress: 0.00 },
+    { time: 12.17, progress: 0.1292 },
   
-    { time: 14.0, progress: 0.1292 },
-    { time: 14.5, progress: 0.3958 },
+    { time: 13.13, progress: 0.27 },
+    { time: 13.48, progress: 0.3958 },
   
-    { time: 15.5, progress: 0.3958 },
-    { time: 16.0, progress: 1.00 }
+    { time: 15.06, progress: 0.58 },
+    { time: 15.41, progress: 0.7228 },
+    { time: 17.00, progress: 1.00 }
   ];
 
   function clamp(value, min, max) {

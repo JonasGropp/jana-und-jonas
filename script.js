@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const duration = 9000;
+    const duration = 12000;
     const startTime = window.performance.now();
     isAutoScrolling = true;
 

@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { time: 13.48, progress: 0.3958 },
   
     { time: 15.06, progress: 0.58 },
-    { time: 15.41, progress: 0.7228 },
-    { time: 17.00, progress: 1.00 }
+    { time: 15.41, progress: 1.00 },
   ];
 
   function clamp(value, min, max) {
@@ -300,7 +299,10 @@ document.addEventListener('DOMContentLoaded', () => {
       top = lerp(topStart, topFinal, t);
       opacity = lerp(0, 1, t);
     } else {
-      top = topFinal;
+      const t = smoothStep((p - 0.34) / 0.66);
+      const topHoldEnd = Math.max(12, topFinal - Math.min(42, viewportHeight * 0.045));
+    
+      top = lerp(topFinal, topHoldEnd, t);
       opacity = 1;
     }
 

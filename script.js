@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const videoScrollTimeline = [
     { time: 12, progress: 0.04 },
-    { time: 14, progress: 0.30 },
-    { time: 16, progress: 0.61 },
+    { time: 13, progress: 0.30 },
+    { time: 14, progress: 0.61 },
     { time: 18, progress: 0.73 }
   ];
 

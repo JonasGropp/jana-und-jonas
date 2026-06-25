@@ -276,3 +276,7 @@ body {
     font-size: 1.25rem;
   }
 }
+
+body.scroll-locked {
+  overflow: hidden;
+}

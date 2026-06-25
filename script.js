@@ -7,7 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const photo3 = document.querySelector('.polaroid-3');
   const photo3Image = photo3.querySelector('img');
 
-  let videoCompleted = false;
+  let scrollEnabled = false;
+  let autoScrollFrameId = null;
+  let isAutoScrolling = false;
 
   const scrollKeys = new Set([
     'ArrowDown',
@@ -32,41 +34,68 @@ document.addEventListener('DOMContentLoaded', () => {
     return t * t * (3 - 2 * t);
   }
 
+  function stopAutoScroll() {
+    if (autoScrollFrameId !== null) {
+      window.cancelAnimationFrame(autoScrollFrameId);
+      autoScrollFrameId = null;
+    }
+
+    isAutoScrolling = false;
+  }
+
   function lockScroll() {
-    videoCompleted = false;
+    stopAutoScroll();
+    scrollEnabled = false;
     window.scrollTo(0, 0);
     document.documentElement.classList.add('scroll-locked');
     document.body.classList.add('scroll-locked');
   }
 
   function unlockScroll() {
-    videoCompleted = true;
+    scrollEnabled = true;
     document.documentElement.classList.remove('scroll-locked');
     document.body.classList.remove('scroll-locked');
   }
 
-  function preventScrollUntilVideoEnded(event) {
-    if (!videoCompleted) {
+  function handleScrollIntent(event) {
+    if (!scrollEnabled) {
       event.preventDefault();
       window.scrollTo(0, 0);
+      return;
+    }
+
+    if (isAutoScrolling) {
+      stopAutoScroll();
     }
   }
 
-  function preventKeyboardScrollUntilVideoEnded(event) {
-    if (!videoCompleted && scrollKeys.has(event.code)) {
+  function handleKeyboardScrollIntent(event) {
+    if (!scrollKeys.has(event.code)) {
+      return;
+    }
+
+    if (!scrollEnabled) {
       event.preventDefault();
       window.scrollTo(0, 0);
+      return;
+    }
+
+    if (isAutoScrolling) {
+      stopAutoScroll();
     }
   }
 
-  document.addEventListener('wheel', preventScrollUntilVideoEnded, { passive: false });
-  document.addEventListener('touchmove', preventScrollUntilVideoEnded, { passive: false });
-  document.addEventListener('keydown', preventKeyboardScrollUntilVideoEnded, { passive: false });
+  document.addEventListener('wheel', handleScrollIntent, { passive: false });
+  document.addEventListener('touchmove', handleScrollIntent, { passive: false });
+  document.addEventListener('keydown', handleKeyboardScrollIntent, { passive: false });
+  document.addEventListener('touchstart', stopAutoScroll, { passive: true });
+  document.addEventListener('pointerdown', stopAutoScroll, { passive: true });
 
   lockScroll();
 
   function startVideo() {
-    lockScroll();
+    stopAutoScroll();
+    unlockScroll();
 
     video.currentTime = 0;
     video.muted = false;
@@ -89,7 +118,43 @@ document.addEventListener('DOMContentLoaded', () => {
     video.pause();
     unlockScroll();
     updateScroll();
+    startAutoScrollToEnd();
   });
+
+  function startAutoScrollToEnd() {
+    stopAutoScroll();
+
+    const startY = window.scrollY;
+    const targetY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+    if (targetY - startY <= 8) {
+      return;
+    }
+
+    const duration = 9000;
+    const startTime = window.performance.now();
+    isAutoScrolling = true;
+
+    function animate(now) {
+      if (!isAutoScrolling) {
+        return;
+      }
+
+      const progress = clamp((now - startTime) / duration, 0, 1);
+      const easedProgress = smoothStep(progress);
+
+      window.scrollTo(0, lerp(startY, targetY, easedProgress));
+      updateScroll();
+
+      if (progress < 1) {
+        autoScrollFrameId = window.requestAnimationFrame(animate);
+      } else {
+        stopAutoScroll();
+      }
+    }
+
+    autoScrollFrameId = window.requestAnimationFrame(animate);
+  }
 
   function getTranslateYForTop(topPx) {
     return topPx - window.innerHeight / 2;
@@ -129,55 +194,29 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.opacity = opacity;
   }
 
-  function getLastPhotoConfig() {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const naturalWidth = photo3Image.naturalWidth || 16;
-    const naturalHeight = photo3Image.naturalHeight || 9;
-
-    const normalWidth = viewportWidth;
-    const normalHeight = normalWidth * (naturalHeight / naturalWidth);
-    const finalScale = Math.max(1, viewportHeight / normalHeight);
-
-    return {
-      viewportWidth,
-      viewportHeight,
-      normalWidth,
-      normalHeight,
-      finalWidth: normalWidth * finalScale,
-      finalHeight: normalHeight * finalScale
-    };
-  }
-
   function moveLastPhoto(progress, start, end) {
     const p = clamp((progress - start) / (end - start), 0, 1);
-    const config = getLastPhotoConfig();
+    const viewportHeight = window.innerHeight;
+    const elementHeight = photo3.getBoundingClientRect().height;
 
-    const entryEnd = 0.34;
-    const holdEnd = 0.56;
-    const zoomProgress = p <= holdEnd ? 0 : smoothStep((p - holdEnd) / (1 - holdEnd));
-
-    const currentWidth = lerp(config.normalWidth, config.finalWidth, zoomProgress);
-    const currentHeight = lerp(config.normalHeight, config.finalHeight, zoomProgress);
-    const currentTop = (config.viewportHeight - currentHeight) / 2;
+    const topStart = viewportHeight * 1.12;
+    const topFinal = Math.max(20, (viewportHeight - elementHeight) / 2);
 
     let top;
     let opacity;
 
     if (p <= 0) {
-      top = config.viewportHeight * 1.12;
+      top = topStart;
       opacity = 0;
-    } else if (p < entryEnd) {
-      const t = smoothStep(p / entryEnd);
-      top = lerp(config.viewportHeight * 1.12, currentTop, t);
+    } else if (p < 0.34) {
+      const t = smoothStep(p / 0.34);
+      top = lerp(topStart, topFinal, t);
       opacity = lerp(0, 1, t);
     } else {
-      top = currentTop;
+      top = topFinal;
       opacity = 1;
     }
 
-    photo3.style.width = `${currentWidth}px`;
-    photo3.style.height = `${currentHeight}px`;
     photo3.style.transform = `translate(-50%, ${getTranslateYForTop(top)}px) rotate(0deg)`;
     photo3.style.opacity = opacity;
   }

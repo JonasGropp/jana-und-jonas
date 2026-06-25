@@ -17,6 +17,12 @@ body {
   overflow-x: hidden;
 }
 
+html.scroll-locked,
+body.scroll-locked {
+  height: 100%;
+  overflow: hidden;
+}
+
 /* VIDEO */
 
 .hero-section {
@@ -89,7 +95,7 @@ body {
 .polaroid-scroll {
   position: relative;
   z-index: 5;
-  height: 360svh;
+  height: 500svh;
   margin-top: -100svh;
   pointer-events: none;
 }
@@ -108,10 +114,13 @@ body {
   top: 50%;
   width: min(86vw, 520px);
   height: min(78svh, 720px);
+  overflow: hidden;
   background: #fff;
   padding: 14px 14px 52px;
   box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+  opacity: 0;
   transform: translate(-50%, 120svh);
+  will-change: transform, opacity, width, height, padding;
 }
 
 .polaroid img {
@@ -130,12 +139,13 @@ body {
   font-size: clamp(1rem, 2vw, 1.2rem);
   color: #333;
   text-align: center;
+  white-space: nowrap;
 }
 
 /* BILD 1 */
 
 .polaroid-1 {
-  transform: translate(-50%, 82svh) rotate(-10deg);
+  transform: translate(-50%, 120svh) rotate(-10deg);
 }
 
 /* BILD 2 */
@@ -148,8 +158,9 @@ body {
 
 .polaroid-3 {
   width: 100vw;
-  height: 100svh;
+  height: 70svh;
   padding: 0;
+  z-index: 3;
   background: transparent;
   box-shadow: none;
   transform: translate(-50%, 120svh) rotate(0deg);
@@ -171,65 +182,6 @@ body {
   color: #fff;
   font-size: clamp(1.2rem, 4vw, 1.8rem);
   text-shadow: 0 2px 14px rgba(0,0,0,0.65);
-}
-
-/* SCROLL ANIMATIONEN */
-
-@keyframes photo1 {
-  0% {
-    transform: translate(-50%, 82svh) rotate(-10deg);
-    opacity: 0.75;
-  }
-  25% {
-    transform: translate(-50%, 7svh) rotate(-10deg);
-    opacity: 1;
-  }
-  70% {
-    transform: translate(-50%, -6svh) rotate(-10deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -120svh) rotate(-10deg);
-    opacity: 0;
-  }
-}
-
-@keyframes photo2 {
-  0% {
-    transform: translate(-50%, 120svh) rotate(10deg);
-    opacity: 0;
-  }
-  25% {
-    transform: translate(-50%, 7svh) rotate(10deg);
-    opacity: 1;
-  }
-  70% {
-    transform: translate(-50%, -6svh) rotate(10deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -120svh) rotate(10deg);
-    opacity: 0;
-  }
-}
-
-@keyframes photo3 {
-  0% {
-    transform: translate(-50%, 120svh) scale(0.88);
-    opacity: 0;
-  }
-  35% {
-    transform: translate(-50%, 12svh) scale(0.92);
-    opacity: 1;
-  }
-  70% {
-    transform: translate(-50%, 0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, 0) scale(1);
-    opacity: 1;
-  }
 }
 
 /* MOBILE */
@@ -263,7 +215,7 @@ body {
 
   .polaroid-3 {
     width: 100vw;
-    height: 100svh;
+    height: 70svh;
     padding: 0;
   }
 
@@ -275,8 +227,4 @@ body {
     bottom: 8svh;
     font-size: 1.25rem;
   }
-}
-
-body.scroll-locked {
-  overflow: hidden;
 }

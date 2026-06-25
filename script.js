@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let scrollEnabled = false;
   let autoScrollFrameId = null;
   let isAutoScrolling = false;
+  let autoScrollDisabledByUser = false;
 
   const scrollKeys = new Set([
     'ArrowDown',
@@ -20,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     'End',
     'Space'
   ]);
+
+  const videoScrollTimeline = [
+    { time: 12, progress: 0.04 },
+    { time: 14, progress: 0.30 },
+    { time: 16, progress: 0.61 },
+    { time: 18, progress: 0.73 }
+  ];
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -34,6 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return t * t * (3 - 2 * t);
   }
 
+  function getMaxScroll() {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+
+  function progressToScrollY(progress) {
+    return getMaxScroll() * clamp(progress, 0, 1);
+  }
+
   function stopAutoScroll() {
     if (autoScrollFrameId !== null) {
       window.cancelAnimationFrame(autoScrollFrameId);
@@ -43,9 +59,19 @@ document.addEventListener('DOMContentLoaded', () => {
     isAutoScrolling = false;
   }
 
+  function disableAutoScrollByUser() {
+    if (!scrollEnabled) {
+      return;
+    }
+
+    autoScrollDisabledByUser = true;
+    stopAutoScroll();
+  }
+
   function lockScroll() {
     stopAutoScroll();
     scrollEnabled = false;
+    autoScrollDisabledByUser = false;
     window.scrollTo(0, 0);
     document.documentElement.classList.add('scroll-locked');
     document.body.classList.add('scroll-locked');
@@ -65,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (isAutoScrolling) {
-      stopAutoScroll();
+      disableAutoScrollByUser();
     }
   }
 
@@ -81,20 +107,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (isAutoScrolling) {
-      stopAutoScroll();
+      disableAutoScrollByUser();
     }
   }
 
   document.addEventListener('wheel', handleScrollIntent, { passive: false });
   document.addEventListener('touchmove', handleScrollIntent, { passive: false });
   document.addEventListener('keydown', handleKeyboardScrollIntent, { passive: false });
-  document.addEventListener('touchstart', stopAutoScroll, { passive: true });
-  document.addEventListener('pointerdown', stopAutoScroll, { passive: true });
+  document.addEventListener('touchstart', disableAutoScrollByUser, { passive: true });
+  document.addEventListener('pointerdown', disableAutoScrollByUser, { passive: true });
 
   lockScroll();
 
   function startVideo() {
     stopAutoScroll();
+    autoScrollDisabledByUser = false;
     unlockScroll();
 
     video.currentTime = 0;
@@ -103,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     video.play().then(() => {
       playOverlay.style.display = 'none';
+      startVideoTimedAutoScroll();
     }).catch(console.log);
   }
 
@@ -118,14 +146,67 @@ document.addEventListener('DOMContentLoaded', () => {
     video.pause();
     unlockScroll();
     updateScroll();
-    startAutoScrollToEnd();
+
+    if (!autoScrollDisabledByUser) {
+      startAutoScrollToEnd();
+    }
   });
+
+  function getVideoScrollProgress(currentTime) {
+    if (currentTime < videoScrollTimeline[0].time) {
+      return null;
+    }
+
+    for (let i = 0; i < videoScrollTimeline.length - 1; i += 1) {
+      const current = videoScrollTimeline[i];
+      const next = videoScrollTimeline[i + 1];
+
+      if (currentTime >= current.time && currentTime < next.time) {
+        const segmentProgress = smoothStep((currentTime - current.time) / (next.time - current.time));
+        return lerp(current.progress, next.progress, segmentProgress);
+      }
+    }
+
+    return videoScrollTimeline[videoScrollTimeline.length - 1].progress;
+  }
+
+  function startVideoTimedAutoScroll() {
+    stopAutoScroll();
+
+    if (autoScrollDisabledByUser) {
+      return;
+    }
+
+    isAutoScrolling = true;
+
+    function animate() {
+      if (!scrollEnabled || autoScrollDisabledByUser || video.paused || video.ended) {
+        stopAutoScroll();
+        return;
+      }
+
+      const targetProgress = getVideoScrollProgress(video.currentTime);
+
+      if (targetProgress !== null) {
+        window.scrollTo(0, progressToScrollY(targetProgress));
+        updateScroll();
+      }
+
+      autoScrollFrameId = window.requestAnimationFrame(animate);
+    }
+
+    autoScrollFrameId = window.requestAnimationFrame(animate);
+  }
 
   function startAutoScrollToEnd() {
     stopAutoScroll();
 
+    if (autoScrollDisabledByUser) {
+      return;
+    }
+
     const startY = window.scrollY;
-    const targetY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const targetY = getMaxScroll();
 
     if (targetY - startY <= 8) {
       return;
@@ -136,7 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
     isAutoScrolling = true;
 
     function animate(now) {
-      if (!isAutoScrolling) {
+      if (!isAutoScrolling || autoScrollDisabledByUser) {
+        stopAutoScroll();
         return;
       }
 
@@ -222,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateScroll() {
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const maxScroll = getMaxScroll();
     const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
 
     movePhoto(photo1, progress, 0.00, 0.38, -10);
